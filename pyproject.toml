@@ -18,7 +18,6 @@ dependencies = [
     "scipy",
     "gymnasium>=0.26.3",
     "gymnasium[classic_control]",
-    "scikit-fuzzy",
 ]
 [packages]
 # Specify your packages here
