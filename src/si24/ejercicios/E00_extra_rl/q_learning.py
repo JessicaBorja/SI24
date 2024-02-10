@@ -59,10 +59,10 @@ if __name__ == "__main__":
                 break
             ep_return += reward
             obs = next_obs
-           # env.render()
+            #env.render()
 
         # Reducir la exploración del agente conforme aprende
-        agent.epsilon *= 0.99  # Reducción lineal de epsilon
+        agent.epsilon *= 0.8  # Reducción lineal de epsilon
 
         print(f"Episode {e} return: ", ep_return)
     env.close()
