@@ -1,0 +1,1 @@
+(95) - En el ejercicio de intro a numpy falta todo a partir del punto `5. imprime la transpuesta de X`
