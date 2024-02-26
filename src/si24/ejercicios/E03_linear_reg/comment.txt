@@ -1,0 +1,3 @@
+- Si aumentamos la tasa de aprendizaje a 0.2 (dos veces más grande que 0.1), converge más rápido
+- Si lo cambiamos por un valor dos veces mas chico, entonces converge mas lento
+- Si ponemos un valor muy grande entonces SI puede diverger. En este caso, 0.2  no es suficiente para provocar esto.
