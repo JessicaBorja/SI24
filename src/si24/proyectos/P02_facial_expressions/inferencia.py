@@ -32,13 +32,15 @@ def predict(img_title_paths):
         # np.ndarray, torch.Tensor
         im_file = (file_path / path).as_posix()
         original, transformed, denormalized = load_img(im_file)
-
+        transformed = transformed.unsqueeze(0)
+        transformed = transformed.cuda()
         # Inferencia
-        logits, proba = modelo.predict(transformed)
-        pred = torch.argmax(proba, -1).item()
-        pred_label = EMOTIONS_MAP[pred]
-
+        # TODO: Para la imagen de entrada, utiliza tu modelo para predecir la clase mas probable
+        pred_label = modelo(transformed)
+        pred_label = torch.argmax(pred_label, dim=-1)
+        pred_label = EMOTIONS_MAP[pred_label.item()]
         # Original / transformada
+        # pred_label (str): nombre de la clase predicha
         h, w = original.shape[:2]
         resize_value = 300
         img = cv2.resize(original, (w * resize_value // h, resize_value))
@@ -54,4 +56,14 @@ def predict(img_title_paths):
 if __name__=="__main__":
     # Direcciones relativas a este archivo
     img_paths = ["./test_imgs/happy.png"]
+    predict(img_paths)
+    img_paths = ["./test_imgs/fear.jpg"]
+    predict(img_paths)
+    img_paths = ["./test_imgs/disgust.jpg"]
+    predict(img_paths)
+    img_paths = ["./test_imgs/sad.jpg"]
+    predict(img_paths)
+    img_paths = ["./test_imgs/neutral.jpg"]
+    predict(img_paths)
+    img_paths = ["./test_imgs/surprise.jpg"]
     predict(img_paths)

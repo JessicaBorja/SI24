@@ -3,59 +3,67 @@ import torch.nn as nn
 import torch.nn.functional as F
 import math
 import pathlib
-from torchvision.models import resnet18, ResNet18_Weights
 
 file_path = pathlib.Path(__file__).parent.absolute()
-
-def build_backbone(model='resnet18', weights='imagenet', freeze=True, last_n_layers=2):
-    if model == 'resnet18':
-        backbone = resnet18(pretrained=weights == 'imagenet')
-        if freeze:
-            for param in backbone.parameters():
-                param.requires_grad = False
-        return backbone
-    else:
-        raise Exception(f'Model {model} not supported')
 
 class Network(nn.Module):
     def __init__(self, input_dim: int, n_classes: int) -> None:
         super().__init__()
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-        # TODO: Calcular dimension de salida
-        out_dim = ...
+        # Calcular la dimensión de salida
+        out_dim = self.calc_out_dim(input_dim, kernel_size=3)
 
-        # TODO: Define las capas de tu red
+        # Definir las capas de la red
+        self.conv1 = nn.Conv2d(1, 128, kernel_size=3)
+        self.max_pool1 = nn.MaxPool2d(2, stride=2)
+        self.conv2 = nn.Conv2d(128, 256, kernel_size=3)
+        self.max_pool2 = nn.MaxPool2d(2, stride=2)
+        self.conv3 = nn.Conv2d(256, 512, kernel_size=3)
+        self.max_pool3 = nn.MaxPool2d(2, stride=2)
+
+        # Definir las capas completamente conectadas
+        self.fc1 = nn.Linear(out_dim * out_dim * 64, 128)  # Ajustar el tamaño de entrada de fc1
+        self.fc2 = nn.Linear(128, 32)
+        self.fc3 = nn.Linear(32, n_classes)
 
         self.to(self.device)
- 
+
     def calc_out_dim(self, in_dim, kernel_size, stride=1, padding=0):
-        out_dim = math.floor((in_dim - kernel_size + 2*padding)/stride) + 1
+        out_dim = (in_dim + 2 * padding - (kernel_size - 1) - 1) // stride + 1
         return out_dim
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        # TODO: Define la propagacion hacia adelante de tu red
-        return logits, proba
+        # Propagación hacia adelante de la red
+        feature_map = self.conv1(x)
+        feature_map = self.max_pool1(feature_map)
+        feature_map = self.conv2(feature_map)
+        feature_map = self.max_pool2(feature_map)
+        feature_map = self.conv3(feature_map)
+        feature_map = self.max_pool3(feature_map)
 
-    def predict(self, x):
+        # Aplanar el tensor para las capas completamente conectadas
+        features = torch.flatten(feature_map, start_dim=1)
+
+        # Capas completamente conectadas
+        features = self.fc1(features)
+        features = F.relu(features)
+        features = self.fc2(features)
+        features = F.relu(features)
+        logits = self.fc3(features)
+        
+        proba = F.softmax(logits,dim=-1)
+        return logits
+
+    def predict(self, x: torch.Tensor) -> torch.Tensor:
         with torch.inference_mode():
             return self.forward(x)
 
     def save_model(self, model_name: str):
-        '''
-            Guarda el modelo en el path especificado
-            args:
-            - net: definición de la red neuronal (con nn.Sequential o la clase anteriormente definida)
-            - path (str): path relativo donde se guardará el modelo
-        '''
         models_path = file_path / 'models' / model_name
-        # TODO: Guarda los pesos de tu red neuronal en el path especificado
-        torch.save( ... )
+        # Guardar los pesos de la red neuronal
+        torch.save(self.state_dict(), models_path)
 
     def load_model(self, model_name: str):
-        '''
-            Carga el modelo en el path especificado
-            args:
-            - path (str): path relativo donde se guardó el modelo
-        '''
-        # TODO: Carga los pesos de tu red neuronal
+        # Cargar los pesos de la red neuronal
+        self.load_state_dict(torch.load(model_name))
