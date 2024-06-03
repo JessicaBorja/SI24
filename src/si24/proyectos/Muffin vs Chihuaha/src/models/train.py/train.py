@@ -1,37 +1,50 @@
 import torch
 import torch.nn as nn
-import torch.optim as optim
-from cnn import CNN
-from preprocess import get_data_loaders
+import torchvision.transforms as transforms
+from torch.utils.data import DataLoader
+from cnn import CNN  # Importa el modelo definido en cnn.py
 
-# Configuración del dispositivo
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+# Definir transformaciones de datos (ajusta según sea necesario)
+transform = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+])
 
-def train_model(data_dir, epochs=10, batch_size=32, learning_rate=0.001):
-    train_loader, test_loader = get_data_loaders(data_dir, batch_size)
-    
-    model = CNN().to(device)
-    criterion = nn.BCELoss()
-    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+# Cargar datos preprocesados
+train_set = torch.load("Dataset/processed/train.pt")
+test_set = torch.load("Dataset/processed/test.pt")
 
-    for epoch in range(epochs):
-        model.train()
-        running_loss = 0.0
-        for inputs, labels in train_loader:
-            inputs, labels = inputs.to(device), labels.to(device).float()
+# Definir DataLoader para cargar los datos en lotes
+batch_size = 32
+train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
+test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=False)
 
-            optimizer.zero_grad()
-            outputs = model(inputs)
-            loss = criterion(outputs, labels.unsqueeze(1))
-            loss.backward()
-            optimizer.step()
-            running_loss += loss.item()
+# Inicializar modelo y función de pérdida
+model = CNN(num_classes=2)  # Crea una instancia del modelo CNN
+criterion = nn.CrossEntropyLoss()  # Utiliza la pérdida de entropía cruzada como función de pérdida
 
-        print(f"Epoch {epoch+1}/{epochs}, Loss: {running_loss/len(train_loader)}")
+# Definir hiperparámetros y configuración de entrenamiento
+num_epochs = 10
+learning_rate = 0.001
+optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)  # Utiliza el optimizador Adam
 
-    torch.save(model.state_dict(), 'reports/results/muffin_vs_chihuahua_cnn.pth')
-    print("Model trained and saved successfully.")
+# Entrenamiento del modelo
+total_steps = len(train_loader)
+for epoch in range(num_epochs):
+    for i, (images, labels) in enumerate(train_loader):
+        # Forward pass
+        outputs = model(images)
+        loss = criterion(outputs, labels)
+        
+        # Backward y optimize
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        
+        if (i+1) % 100 == 0:
+            print (f'Epoch [{epoch+1}/{num_epochs}], Step [{i+1}/{total_steps}], Loss: {loss.item():.4f}')
 
-if __name__ == "__main__":
-    train_model('data/raw')
-
+# Guardar el modelo entrenado
+torch.save(model.state_dict(), 'model.ckpt')
+print("Modelo entrenado guardado correctamente.")

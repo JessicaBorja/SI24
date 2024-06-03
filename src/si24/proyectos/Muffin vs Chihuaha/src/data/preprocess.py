@@ -29,7 +29,8 @@ def preprocess_data(data_dir, train_ratio=0.8, random_state=42):
 
 if __name__ == "__main__":
     # Directorio de datos sin procesar
-    data_dir = "Dataset/raw"
+    data_dir = "C:/Users/jfros/OneDrive/OneDriveDocs/GitHub/Maravilla-/src/si24/proyectos/Muffin vs Chihuaha/Dataset/raw"
+
 
     # Directorio de salida para datos preprocesados
     processed_dir = "Dataset/processed"

@@ -1,26 +1,22 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 class CNN(nn.Module):
-    def __init__(self):
+    def __init__(self, num_classes):
         super(CNN, self).__init__()
-        self.conv1 = nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1)
-        self.pool = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
-        self.conv2 = nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1)
-        self.fc1 = nn.Linear(64 * 75 * 75, 128)
-        self.fc2 = nn.Linear(128, 1)
-        self.dropout = nn.Dropout(0.5)
-
+        # Definir las capas convolucionales y de pooling
+        self.conv1 = nn.Conv2d(in_channels=3, out_channels=32, kernel_size=3, padding=1)
+        self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.conv2 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, padding=1)
+        # Definir la capa completamente conectada (fully connected)
+        self.fc = nn.Linear(64 * 56 * 56, num_classes)  # Ajustar el tamaño de entrada según la salida de la última capa convolucional
+        
     def forward(self, x):
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        x = x.view(-1, 64 * 75 * 75)
-        x = F.relu(self.fc1(x))
-        x = self.dropout(x)
-        x = torch.sigmoid(self.fc2(x))
+        # Aplicar las capas convolucionales y de pooling
+        x = self.pool(torch.relu(self.conv1(x)))
+        x = self.pool(torch.relu(self.conv2(x)))
+        # Aplanar la salida para pasarla a la capa completamente conectada
+        x = torch.flatten(x, 1)
+        # Aplicar la capa completamente conectada
+        x = self.fc(x)
         return x
-
-if __name__ == "__main__":
-    model = CNN()
-    print(model)
