@@ -1,0 +1,15 @@
+# Ignorar el entorno virtual
+venv/
+
+# Archivos y carpetas de Python
+__pycache__/
+*.pyc
+
+# Archivos de informes
+reports/
+
+# Archivos de datos preprocesados
+data/processed/
+
+# Configuración de VSCode
+.vscode/
