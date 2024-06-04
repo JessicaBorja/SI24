@@ -1,10 +1,11 @@
 import torch
 import torch.nn as nn
-import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
-from cnn import CNN  # Importa el modelo definido en cnn.py
+from cnn import CNN
 import time
-from tqdm import tqdm  # Importa tqdm para la barra de progreso
+from tqdm import tqdm
+from torchvision import transforms
+
 
 # Definir transformaciones de datos
 transform = transforms.Compose([
@@ -23,13 +24,13 @@ train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
 test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=False)
 
 # Inicializar modelo y función de pérdida
-model = CNN(num_classes=2)  # Crea una instancia del modelo CNN
-criterion = nn.CrossEntropyLoss()  # Utiliza la pérdida de entropía cruzada como función de pérdida
+model = CNN(num_classes=2)
+criterion = nn.CrossEntropyLoss()
 
 # Definir hiperparámetros y configuración de entrenamiento
 num_epochs = 10
-learning_rate = 0.001
-optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)  # Utiliza el optimizador Adam
+learning_rate = 0.0007
+optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
 # Listas para almacenar pérdidas
 train_losses = []

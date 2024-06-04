@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
 import torchvision
-import torchivison.transforms as transforms
+import torchvision.transforms as transforms
 import matplotlib.pyplot as plt
 
-#coniguracion  cpu :/
-#device = torch.device('cuda' if torch.cuda is available() else 'cpu')
+# Configuración para forzar el uso de CPU
+# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 device = torch.device('cpu')
