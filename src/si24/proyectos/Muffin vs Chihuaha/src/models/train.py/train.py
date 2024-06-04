@@ -28,8 +28,8 @@ model = CNN(num_classes=2)
 criterion = nn.CrossEntropyLoss()
 
 # Definir hiperparámetros y configuración de entrenamiento
-num_epochs = 10
-learning_rate = 0.0007
+num_epochs = 7
+learning_rate = 0.00005
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
 # Listas para almacenar pérdidas
