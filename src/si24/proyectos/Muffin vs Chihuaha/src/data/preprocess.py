@@ -1,7 +1,9 @@
+#Prueba 6 correcion de directorios 
 import os
 import torch
 from torchvision import datasets, transforms
 from sklearn.model_selection import train_test_split
+
 
 def preprocess_data(data_dir, train_ratio=0.7, val_ratio=0.15, random_state=42):
     # Definir transformaciones de imagen
@@ -40,14 +42,14 @@ if __name__ == "__main__":
     # Directorio de datos sin procesar
     data_dir = "C:/Users/jfros/OneDrive/OneDriveDocs/GitHub/Maravilla-/src/si24/proyectos/Muffin vs Chihuaha/Dataset/raw"
 
-    # Directorio de salida para datos preprocesados
+    # Directorio base para datos procesados
     processed_dir = "C:/Users/jfros/OneDrive/OneDriveDocs/GitHub/Maravilla-/src/si24/proyectos/Muffin vs Chihuaha/Dataset/processed"
 
     # Preprocesar datos
     train_set, val_set, test_set = preprocess_data(data_dir)
 
-    # Guardar datos preprocesados
-    os.makedirs(processed_dir, exist_ok=True)
-    torch.save(train_set, os.path.join(processed_dir, "train.pt"))
-    torch.save(val_set, os.path.join(processed_dir, "val.pt"))
-    torch.save(test_set, os.path.join(processed_dir, "test.pt"))
+    # Guardar datos preprocesados en subdirectorios correspondientes
+    for dataset, subset_dir in zip([train_set, val_set, test_set], ['train', 'val', 'test']):
+        subset_dir_path = os.path.join(processed_dir, subset_dir)
+        os.makedirs(subset_dir_path, exist_ok=True)
+        torch.save(dataset, os.path.join(subset_dir_path, "dataset.pt"))
