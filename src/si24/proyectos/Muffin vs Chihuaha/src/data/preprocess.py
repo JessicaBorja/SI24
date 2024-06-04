@@ -1,9 +1,7 @@
-#Prueba 6 correcion de directorios 
 import os
 import torch
 from torchvision import datasets, transforms
 from sklearn.model_selection import train_test_split
-
 
 def preprocess_data(data_dir, train_ratio=0.7, val_ratio=0.15, random_state=42):
     # Definir transformaciones de imagen
@@ -14,7 +12,7 @@ def preprocess_data(data_dir, train_ratio=0.7, val_ratio=0.15, random_state=42):
     ])
 
     # Cargar datos desde los directorios
-    dataset = datasets.ImageFolder(data_dir, transform=transform)
+    dataset = datasets.ImageFolder(os.path.join(data_dir, "train"), transform=transform)
 
     # Dividir en conjuntos de entrenamiento, validación y prueba
     train_indices, test_val_indices = train_test_split(
@@ -39,14 +37,11 @@ def preprocess_data(data_dir, train_ratio=0.7, val_ratio=0.15, random_state=42):
     return train_set, val_set, test_set
 
 if __name__ == "__main__":
-    # Directorio de datos sin procesar
-    data_dir = "C:/Users/jfros/OneDrive/OneDriveDocs/GitHub/Maravilla-/src/si24/proyectos/Muffin vs Chihuaha/Dataset/raw"
-
     # Directorio base para datos procesados
     processed_dir = "C:/Users/jfros/OneDrive/OneDriveDocs/GitHub/Maravilla-/src/si24/proyectos/Muffin vs Chihuaha/Dataset/processed"
 
     # Preprocesar datos
-    train_set, val_set, test_set = preprocess_data(data_dir)
+    train_set, val_set, test_set = preprocess_data(processed_dir)
 
     # Guardar datos preprocesados en subdirectorios correspondientes
     for dataset, subset_dir in zip([train_set, val_set, test_set], ['train', 'val', 'test']):

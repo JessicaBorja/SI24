@@ -1,7 +1,8 @@
+import os
 import torch
-import torchvision.transforms as transforms
+from torchvision import transforms
 from torch.utils.data import DataLoader
-from cnn import CNN  # Importa el modelo definido en cnn.py
+from cnn import CNN  # Asegúrate de que el modelo CNN esté definido en cnn.py
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -17,7 +18,7 @@ model.load_state_dict(torch.load('model.ckpt'))  # Ajusta el nombre del archivo 
 model.eval()
 
 # Cargar datos preprocesados de prueba
-test_set = torch.load("Dataset/processed/test.pt")  # Ajusta la ruta según donde tengas tus datos
+test_set = torch.load("C:/Users/jfros/OneDrive/OneDriveDocs/GitHub/Maravilla-/src/si24/proyectos/Muffin vs Chihuaha/Dataset/processed/test.pt")  # Ajusta la ruta según donde tengas tus datos
 test_loader = DataLoader(test_set, batch_size=1, shuffle=True)
 
 # Obtener clases
